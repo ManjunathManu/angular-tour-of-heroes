@@ -1,0 +1,10 @@
+h3{
+    font-family: 'Times New Roman', Times, serif;
+    font-style: inherit;
+    text-decoration: underline;
+    text-anchor: start
+}
+
+a{
+    font-size: 140%;
+}

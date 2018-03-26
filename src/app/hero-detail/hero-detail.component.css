@@ -1,0 +1,11 @@
+div{
+    font-size: 120%;
+}
+
+input{
+    font-size: 100%;
+}
+
+.input-group > input{
+    width:50%;
+}

@@ -1,0 +1,6 @@
+<h3 *ngIf="heroes">Top {{heroes.length}} heroes</h3>
+<div class="row">
+  <div class="col-sm" *ngFor="let hero of heroes">
+    <a routerLink="/detail/{{hero.id}}">{{hero.name}}</a>
+  </div>
+</div>
