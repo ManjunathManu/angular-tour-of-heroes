@@ -11,7 +11,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 @Injectable()
 export class HeroService {
 
-  private heroesUrl = 'api/heroes';  // URL to web api
+  private heroesUrl = '/api/heroes';  // URL to web api
 
   constructor(
     private http: HttpClient,
@@ -21,25 +21,26 @@ export class HeroService {
     this.log('Fetching heroes...')
     // return of(HEROES);
     return this.http.get<Hero[]>(this.heroesUrl)
-      // .pipe(
-      // tap(heroes => this.log(`Fetched heroes`)),
-      // catchError(this.handleError('getHeroes',[]))
-      // )
+      .pipe(
+      tap(heroes => this.log(`Fetched heroes`)),
+      catchError(this.handleError('getHeroes',[]))
+      )
   }
 
-  getHero(id: number): Observable<Hero> {
-    this.messageService.add(`HERO SERVICE:Fetched hero id=${id}`);
-    return of(HEROES.find(hero => hero.id === id));
-  }
-
-  // getHero(id:number): Observable<Hero>{
-  //   const url = `${this.heroesUrl}/${id}`;
-  //   return this.http.get<Hero>(url)
-  //     .pipe(
-  //       tap(_ =>  this.log(`Fetched hero of id ${id}`)),
-  //       catchError(this.handleError<Hero>(`get hero id=${id}`))
-  //     )
+  // getHero(id: number): Observable<Hero> {
+  //   this.messageService.add(`HERO SERVICE:Fetched hero id=${id}`);
+  //   return of(HEROES.find(hero => hero.id === id));
   // }
+
+  getHero(id:number): Observable<Hero>{
+    const url = `${this.heroesUrl}/${id}`;
+    return this.http.get<Hero>(url)
+      .pipe(
+        tap(_ =>  this.log(`Fetched hero of id ${id}`)),
+        catchError(this.handleError<Hero>(`get hero id=${id}`))
+      )
+  }
+
   /** PUT: update the hero on the server */
   updateHero(hero: Hero): Observable<any> {
     const httpOptions = {
@@ -57,7 +58,7 @@ export class HeroService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     };
     return this.http.post<Hero>(this.heroesUrl, hero, httpOptions).pipe(
-      tap((hero: Hero) => this.log(`added hero w/ id=${hero.id}`)),
+      tap((hero: Hero) => this.log(`added hero with id=${hero.id}`)),
       catchError(this.handleError<Hero>('addHero'))
     );
   }
@@ -70,7 +71,7 @@ export class HeroService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     };
     return this.http.delete<Hero>(url, httpOptions).pipe(
-      tap(_ => this.log(`deleted hero id=${id}`)),
+      tap(_ => this.log(`Deleted hero id=${id}`)),
       catchError(this.handleError<Hero>('deleteHero'))
     );
   }
@@ -89,10 +90,10 @@ export class HeroService {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      // console.error("[ERROR]",error); // log to console instead
+      console.error("[ERROR]",error.error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
+      this.log(`${operation} failed: ${error.error}`);
 
       // Let the app keep running by returning an empty result.
       return of(result as T);
