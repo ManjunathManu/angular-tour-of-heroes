@@ -10,12 +10,15 @@ import 'rxjs/add/observable/interval';
 export class MessagesComponent implements OnInit {
 
   constructor(public messageService: MessageService) { }
-
+  private id;
   ngOnInit() {
+    this.id = setInterval(() => {
+      this.messageService.clearAll()
+    }, 5000);
   }
-
-  // setTimeout(() => {
-  //   this.messageService.clearAll()
-  // }, 2000);
-
+  ngOnDestroy() {
+    if (this.id) {
+      clearInterval(this.id);
+    }
+  }
 }

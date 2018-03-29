@@ -12,7 +12,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 export class HeroService {
 
   private heroesUrl = '/api/heroes';  // URL to web api
-
+  public searchResult;
   constructor(
     private http: HttpClient,
     private messageService: MessageService) { }
@@ -23,7 +23,7 @@ export class HeroService {
     return this.http.get<Hero[]>(this.heroesUrl)
       .pipe(
       tap(heroes => this.log(`Fetched heroes`)),
-      catchError(this.handleError('getHeroes',[]))
+      catchError(this.handleError('getHeroes', []))
       )
   }
 
@@ -32,12 +32,12 @@ export class HeroService {
   //   return of(HEROES.find(hero => hero.id === id));
   // }
 
-  getHero(id:number): Observable<Hero>{
+  getHero(id: number): Observable<Hero> {
     const url = `${this.heroesUrl}/${id}`;
     return this.http.get<Hero>(url)
       .pipe(
-        tap(_ =>  this.log(`Fetched hero of id ${id}`)),
-        catchError(this.handleError<Hero>(`get hero id=${id}`))
+      tap(_ => this.log(`Fetched hero of id ${id}`)),
+      catchError(this.handleError<Hero>(`get hero id=${id}`))
       )
   }
 
@@ -76,21 +76,44 @@ export class HeroService {
     );
   }
 
+  searchHero(searchTerm: String): Observable<Hero[]> {
+    if (!searchTerm.trim()) {
+      console.log('Empty search term--');
+      return of([]);
+    } else {
+      const url = `${this.heroesUrl}/?name=${searchTerm}`;
+      return this.http.get<Hero[]>(url)
+        .pipe(
+        // tap(heroes => this.log(`Got search result for search term ${searchTerm}`)),
+        tap(heroes => {
+          this.log(`Got search result for search term ${searchTerm}`);
+          this.searchResult = heroes;
+          console.log('resulkts', this.searchResult);
+        }),
+        catchError(this.handleError('searchHeroes', []))
+        )
+    }
+
+  }
+
+  clearSearchResults():void{
+    this.searchResult = [];
+  }
   private log(message: String) {
     this.messageService.add("HERO SERVICE: " + message)
   }
 
   /**
- * Handle Http operation that failed.
- * Let the app continue.
- * @param operation - name of the operation that failed
- * @param result - optional value to return as the observable result
- */
+   * Handle Http operation that failed.
+   * Let the app continue.
+   * @param operation - name of the operation that failed
+   * @param result - optional value to return as the observable result
+   */
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error("[ERROR]",error.error); // log to console instead
+      console.error("[ERROR]", error.error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.error}`);

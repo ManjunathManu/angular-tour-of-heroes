@@ -1,0 +1,12 @@
+<div *ngIf="heroService.searchResult">
+  <h4>Hero Search</h4>
+  <ul class="search-result">
+    <li *ngFor="let hero of heroService.searchResult " >
+      <a routerLink="/detail/{{hero.id}}">
+        {{hero.name}}
+      </a>
+    </li>
+  </ul>
+
+</div>
+

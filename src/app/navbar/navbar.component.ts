@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Hero } from '../hero';
 import { findIndex } from 'rxjs/operator/findIndex';
+import { HeroService} from '../hero.service';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'app-navbar',
@@ -12,17 +14,25 @@ export class NavbarComponent implements OnInit {
   { item: "Heroes", activeStatus: false, route: "/heroes" }];
 
   public activeItem: Object = this.menuItems[0]
-
+  // public searchResult : Hero[];
   private index: number;
-  constructor() { }
+  constructor(private heroService:HeroService) { }
+
+  // @Input() searchResult:Hero[];
 
   ngOnInit() {
   }
-  toSearchHero: Hero;
-  searchHero(): void {
-    console.log(this.toSearchHero);
-    console.log(event)
+
+  searchHero(toSearchHero): void {
+    console.log(toSearchHero.value);
+    let term = toSearchHero.value.trim();
+    this.heroService.searchHero(toSearchHero.value)
+    .subscribe(heroes => {
+      // this.searchResult = heroes
+      console.log('search result--',heroes)
+    })
   }
+
   activatNavItem(clickedItem): void {
     this.menuItems.map((menuItem: any) => {
       if (menuItem.item === clickedItem) {

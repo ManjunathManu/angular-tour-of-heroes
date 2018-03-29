@@ -18,4 +18,5 @@ export class MessageService {
     let index = this.messages.indexOf(message);
     this.messages.splice(index, 1);
   }
+
 }
